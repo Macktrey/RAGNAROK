@@ -1,0 +1,255 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighting Game</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container" id="gameContainer">
+        <button id="fullscreenBtn" title="Toggle Fullscreen (F11)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 2h-2v3h-3v2h5v-5zm-3-4V5h-2v5h5V7h-3z"/></svg>
+        </button>
+
+        <div id="titleScreen">
+            <h2 class="game-title">R^₉|\|@®()|< !</h2>
+            <p class="press-key-prompt">Press Any Key to Start</p>
+        </div>
+
+        <div id="startScreen">
+            <h2 class="game-title">R^₉|\|@®()|< !</h2>
+            <div class="sound-toggles">
+                <button id="startMusicToggleBtn" class="sound-toggle-btn active">Music ON</button>
+                <button id="startSfxToggleBtn" class="sound-toggle-btn active">SFX ON</button>
+            </div>
+            <div class="speed-control-container">
+                <label for="gameSpeedSlider">Game Speed</label>
+                <input type="range" id="gameSpeedSlider" min="0.1" max="2.0" value="1.0" step="0.1">
+                <span id="gameSpeedValue" class="speed-value">1.0x</span>
+            </div>
+            <div class="flex flex-col gap-2">
+                <button id="onePlayerButton" class="menu-button">1 Player (vs AI)</button>
+                <button id="twoPlayerButton" class="menu-button">2 Player</button>
+            </div>
+        </div>
+
+        <div class="health-bar-container">
+             <div class="player-ui-cluster">
+                <div class="health-bar-row">
+                    <div id="player1Health" class="health-bar">
+                        <div class="health-fill-layer2"></div>
+                        <div class="health-fill"></div>
+                    </div>
+                </div>
+                <div class="power-ultimate-row player1">
+                    <div id="player1UltimateCharge" class="ultimate-charge-display">
+                        <canvas id="player1UltimateCanvas" class="ultimate-charge-canvas" width="30" height="30"></canvas>
+                    </div>
+                    <div id="player1Resource" class="power-bar">
+                        <div class="power-fill"></div>
+                        <div id="player1AwakeningPlus" class="awakening-plus-indicator">+</div>
+                    </div>
+                </div>
+                <div id="player1TeleportCharges" class="teleport-charges-container">
+                    <div class="teleport-charge-bar"></div>
+                    <div class="teleport-charge-bar"></div>
+                    <div class="teleport-charge-bar"></div>
+                </div>
+                <div id="player1SingleTeleport" class="single-teleport-bar-container">
+                    <div id="player1AwakeningIndicator" class="awakening-indicator">&infin;</div>
+                </div>
+            </div>
+            <div class="player-ui-cluster">
+                <div class="health-bar-row">
+                    <div id="player2Health" class="health-bar">
+                        <div class="health-fill-layer2"></div>
+                        <div class="health-fill"></div>
+                    </div>
+                </div>
+                <div class="power-ultimate-row player2">
+                     <div id="player2Resource" class="power-bar">
+                        <div class="power-fill"></div>
+                        <div id="player2AwakeningPlus" class="awakening-plus-indicator">+</div>
+                    </div>
+                    <div id="player2UltimateCharge" class="ultimate-charge-display">
+                        <canvas id="player2UltimateCanvas" class="ultimate-charge-canvas" width="30" height="30"></canvas>
+                    </div>
+                </div>
+                 <div id="player2TeleportCharges" class="teleport-charges-container">
+                    <div class="teleport-charge-bar"></div>
+                    <div class="teleport-charge-bar"></div>
+                    <div class="teleport-charge-bar"></div>
+                </div>
+                <div id="player2SingleTeleport" class="single-teleport-bar-container">
+                    <div id="player2AwakeningIndicator" class="awakening-indicator">&infin;</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+            <canvas id="uiEffectsCanvas"></canvas>
+        </div>
+        
+        <div id="pauseScreen">
+            <h2 class="pause-title">PAUSED</h2>
+            <div class="sound-toggles">
+                <button id="musicToggleBtn" class="sound-toggle-btn active">Music ON</button>
+                <button id="sfxToggleBtn" class="sound-toggle-btn active">SFX ON</button>
+            </div>
+            <div class="speed-control-container">
+                <label for="pauseGameSpeedSlider">Game Speed</label>
+                <input type="range" id="pauseGameSpeedSlider" min="0.1" max="2.0" value="1.0" step="0.1">
+                <span id="pauseGameSpeedValue" class="speed-value">1.0x</span>
+            </div>
+            <button id="pauseQuitButton" class="menu-button">Quit to Main Menu</button>
+            <div class="keyboard-layout-container">
+                <div class="player1-controls">
+                    <h3 class="player-title">Player 1</h3>
+                    <div class="keyboard-layout">
+                        <div class="key-row">
+                             <div class="key"><span class="move-label">Teleport</span><span class="key-char">5</span></div>
+                             <div class="key"><span class="move-label">Fireball</span><span class="key-char">6</span></div>
+                             <div class="key"><span class="move-label">Laser</span><span class="key-char">7</span></div>
+                             <div class="key"><span class="move-label">Lightning</span><span class="key-char">8</span></div>
+                             <div class="key"><span class="move-label">Kamehameha</span><span class="key-char">9</span></div>
+                        </div>
+                        <div class="key-row">
+                             <div class="empty-space"></div>
+                             <div class="key"><span class="move-label">Jump</span><span class="key-char">W</span></div>
+                             <div class="empty-space"></div>
+                             <div class="empty-space"></div>
+                             <div class="key"><span class="move-label">Mid Atk</span><span class="key-char">T</span></div>
+                             <div class="key"><span class="move-label">Low Atk</span><span class="key-char">Y</span></div>
+                        </div>
+                        <div class="key-row">
+                            <div class="key"><span class="move-label">Left</span><span class="key-char">A</span></div>
+                            <div class="key"><span class="move-label">Duck</span><span class="key-char">S</span></div>
+                            <div class="key"><span class="move-label">Right</span><span class="key-char">D</span></div>
+                        </div>
+                        <div class="key-row">
+                            <div class="key wide-key"><span class="move-label">Block</span><span class="key-char">L-Shift</span></div>
+                            <div class="key space-key"><span class="move-label">Ultimate</span><span class="key-char">Space</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player2-controls">
+                    <h3 class="player-title">Player 2</h3>
+                     <div class="p2-layout">
+                        <div class="keyboard-layout">
+                             <div class="key-row">
+                                <div class="empty-space"></div>
+                                <div class="key wide-key"><span class="move-label">Block</span><span class="key-char">R-Shift</span></div>
+                            </div>
+                            <div class="key-row">
+                                <div class="empty-space"></div>
+                                <div class="key"><span class="move-label">Jump</span><span class="key-char">↑</span></div>
+                            </div>
+                            <div class="key-row">
+                                <div class="key"><span class="move-label">Left</span><span class="key-char">←</span></div>
+                                <div class="key"><span class="move-label">Duck</span><span class="key-char">↓</span></div>
+                                <div class="key"><span class="move-label">Right</span><span class="key-char">→</span></div>
+                            </div>
+                        </div>
+                        <div class="numpad-section">
+                            <div class="numpad-main">
+                                <div class="key-row">
+                                    <div class="key"><span class="move-label">Kamehameha</span><span class="key-char">4</span></div>
+                                    <div class="key"><span class="move-label">Teleport</span><span class="key-char">5</span></div>
+                                </div>
+                                <div class="key-row">
+                                    <div class="key"><span class="move-label">Fireball</span><span class="key-char">1</span></div>
+                                    <div class="key"><span class="move-label">Laser</span><span class="key-char">2</span></div>
+                                    <div class="key"><span class="move-label">Lightning</span><span class="key-char">3</span></div>
+                                </div>
+                            </div>
+                            <div class="numpad-side">
+                                <div class="key tall-key"><span class="move-label">Mid Atk</span><span class="key-char">+</span></div>
+                                <div class="key tall-key enter-key"><span class="move-label">Low Atk</span><span class="key-char">Enter</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverScreen">
+            <span id="gameOverText"></span>
+            <button id="restartButton">Restart Game</button>
+            <button id="gameOverQuitButton" class="menu-button">Return to Main Menu</button>
+        </div>
+
+        <div id="quitConfirmationModal">
+            <p class="modal-text">Are you sure you want to quit?</p>
+            <div class="modal-buttons">
+                <button id="quitConfirmYes" class="modal-button">Yes</button>
+                <button id="quitConfirmNo" class="modal-button">No</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sound Effects -->
+    <audio id="mainMenuMusic1" src="https://drive.google.com/uc?export=download&id=1IhPfHEZ9WCmogz_SQsEgrSrdHWaHmNUP" loop></audio>
+    <audio id="mainMenuMusic2" src="https://drive.google.com/uc?export=download&id=11IfTKH4BS2Ld_q2hcJvgs4IEEPFifxiw" loop></audio>
+    <audio id="fightMusic1" src="https://drive.google.com/uc?export=download&id=1YBzpbG3iDym5ae_U8w4MXHDtXZy8Qm7J" loop></audio>
+    <audio id="fightMusic2" src="https://drive.google.com/uc?export=download&id=1teoVKrWBdinQrH_jlV1EdRreyOdJE_Y1" loop></audio>
+
+
+    <audio id="beginSfx" src="https://www.myinstants.com/media/sounds/demon-slayer-breath.mp3"></audio>
+    <audio id="landSfx" src="https://www.myinstants.com/media/sounds/brick-next-player.mp3"></audio>
+    <audio id="takeHitSfx" src="https://www.myinstants.com/media/sounds/stabee.mp3"></audio>
+    <audio id="burnSfx" src="https://www.myinstants.com/media/sounds/y2mate_XL9ozUG.mp3"></audio>
+    <audio id="duckSfx" src="https://www.myinstants.com/media/sounds/duck-to-avoid.mp3"></audio>
+    <audio id="dashSfx" src="https://www.myinstants.com/media/sounds/dash-for-game-v2.mp3"></audio>
+    <audio id="fireballSfx" src="https://www.myinstants.com/media/sounds/firey-woosh-thick.mp3"></audio>
+    <audio id="fireballHitSfx" src="https://www.myinstants.com/media/sounds/fireball-hit-by-a-car.mp3"></audio>
+    <audio id="fireballClashSfx" src="https://www.myinstants.com/media/sounds/grenade-explosion.mp3"></audio>
+    <audio id="laserSfx" src="https://www.myinstants.com/media/sounds/beam-rifle-shot-1.mp3"></audio>
+    <audio id="laserAwakenedSfx" src="https://www.myinstants.com/media/sounds/lego-star-wars-y-wing-blaster.mp3"></audio>
+    <audio id="laserClashSfx" src="https://www.myinstants.com/media/sounds/lightsaber-clash-02.mp3"></audio>
+    <audio id="lightningSfx" src="https://www.myinstants.com/media/sounds/thunder-sound-effect_nnJumIi.mp3"></audio>
+    <audio id="lightningAwakenedSfx" src="https://www.myinstants.com/media/sounds/chidori-lightning.mp3"></audio>
+    <audio id="kamehamehaChargeSfx" src="https://www.myinstants.com/media/sounds/kame-charge.mp3"></audio>
+    <audio id="kamehamehaLvl1Sfx" src="https://www.myinstants.com/media/sounds/lvl-1-kame.mp3"></audio>
+    <audio id="kamehamehaLvl2Sfx" src="https://www.myinstants.com/media/sounds/lvl-2-kame.mp3"></audio>
+    <audio id="kamehamehaLvl3Sfx" src="https://www.myinstants.com/media/sounds/lvl-3-kame-v2.mp3"></audio>
+    <audio id="kamehamehaClashLoopSfx" src="https://www.myinstants.com/media/sounds/lightsaber-clash-hold-loop.mp3"></audio>
+    <audio id="kamehamehaClashLvl2EndSfx" src="https://www.myinstants.com/media/sounds/lvl-2-kame-feedback.mp3"></audio>
+    <audio id="kamehamehaClashLvl3EndSfx" src="https://www.myinstants.com/media/sounds/lvl-3-kame-feedback.mp3"></audio>
+    <audio id="ultimateSfx" src="https://www.myinstants.com/media/sounds/beni-boom-boom.mp3"></audio>
+    <audio id="teleportSfx" src="https://www.myinstants.com/media/sounds/shadow-clone-cancelation-sound-effect.mp3"></audio>
+    <audio id="teleportAwakenedSfx" src="https://www.myinstants.com/media/sounds/unknown-roar.mp3"></audio>
+    <audio id="blockUpSfx" src="https://www.myinstants.com/media/sounds/hidden-blade-draw.mp3"></audio>
+    <audio id="blockDownSfx" src="https://www.myinstants.com/media/sounds/hidden-blade-retract.mp3"></audio>
+    <audio id="shieldHitPhysicalSfx" src="https://www.myinstants.com/media/sounds/clang.mp3"></audio>
+    <audio id="shieldHitFireballSfx" src="https://www.myinstants.com/media/sounds/fire-hit-shield.mp3"></audio>
+    <audio id="shieldHitLaserSfx" src="https://www.myinstants.com/media/sounds/laser-hit.mp3"></audio>
+    <audio id="awakening1Sfx" src="https://www.myinstants.com/media/sounds/1st-wake.mp3"></audio>
+    <audio id="awakening2Sfx" src="https://www.myinstants.com/media/sounds/2nd-wake.mp3"></audio>
+    <audio id="awakeningEndSfx" src="https://www.myinstants.com/media/sounds/death-counter-activation-tsbg.mp3"></audio>
+    <audio id="yellowHealthSfx" src="https://www.myinstants.com/media/sounds/lowhealthrealm.mp3"></audio>
+    <audio id="redHealthSfx" src="https://www.myinstants.com/media/sounds/halo-reach-sudden-death-voice.mp3"></audio>
+    <audio id="deathSfx" src="https://www.myinstants.com/media/sounds/undertakers-bell_2UwFCIe.mp3"></audio>
+    <audio id="gameOverSfx" src="https://www.myinstants.com/media/sounds/latom.mp3"></audio>
+    <audio id="iceballSfx" src="https://www.myinstants.com/media/sounds/iceball.mp3"></audio>
+    <audio id="iceballHitSfx" src="https://www.myinstants.com/media/sounds/ice-magic-trail-sound-effect.mp3"></audio>
+    <audio id="iceballClashSfx" src="https://www.myinstants.com/media/sounds/3-freeze.mp3"></audio>
+    <audio id="iceWallHitSfx" src="https://www.myinstants.com/media/sounds/hitting-ice-3.mp3"></audio>
+    <audio id="iceWallStrongHitSfx" src="https://www.myinstants.com/media/sounds/ice-lazer-2.mp3"></audio>
+    <audio id="iceWallBreakSfx" src="https://www.myinstants.com/media/sounds/iceball-shatter.mp3"></audio>
+    <audio id="iceWallLoopSfx" src="https://www.myinstants.com/media/sounds/ice-wall-cracking.mp3"></audio>
+    <audio id="greenHealthRegenSfx" src="https://www.myinstants.com/media/sounds/green-up.mp3"></audio>
+    <audio id="midAttackSfx" src="https://www.myinstants.com/media/sounds/mid-attack.mp3"></audio>
+    <audio id="midAttackAwakenedSfx" src="https://www.myinstants.com/media/sounds/mid-attack-wake.mp3"></audio>
+    <audio id="lowAttackSfx" src="https://www.myinstants.com/media/sounds/low-attack.mp3"></audio>
+    <audio id="lowAttackAwakenedSfx" src="https://www.myinstants.com/media/sounds/low-attack-wake.mp3"></audio>
+
+
+    <!-- Link to your external JavaScript file -->
+    <script src="script.js" type="module"></script>
+</body>
+</html>
