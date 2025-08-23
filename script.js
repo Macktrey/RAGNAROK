@@ -1,6 +1,6 @@
 // Global variables for Firebase configuration and authentication token
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
 // Import necessary Firebase modules
@@ -8,38 +8,47 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+let app, db, auth, userId;
 
-let userId = null; // Will store the current user's ID
-
-// Authenticate the user and get their ID
-async function authenticateUser() {
+// --- Robust Firebase Initialization ---
+// This check ensures the game can run even without the Firebase config from the Canvas environment.
+if (firebaseConfigString && firebaseConfigString !== '{}') {
     try {
-        if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-            await signInAnonymously(auth);
-        }
-        userId = auth.currentUser?.uid || crypto.randomUUID(); // Use UID if authenticated, else a random ID
-        console.log("Firebase initialized. User ID:", userId);
-    } catch (error) {
-        console.error("Firebase authentication error:", error);
-    }
-}
+        const firebaseConfig = JSON.parse(firebaseConfigString);
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
 
-// Wait for authentication before proceeding
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        userId = user.uid;
-        console.log("Auth state changed. User ID:", userId);
-    } else {
-        console.log("No user signed in (or signed out).");
-        await authenticateUser();
+        // Authenticate the user and get their ID
+        const authenticateUser = async () => {
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+            userId = auth.currentUser?.uid || crypto.randomUUID();
+            console.log("Firebase initialized. User ID:", userId);
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+            } else {
+                await authenticateUser();
+            }
+        });
+
+    } catch (error) {
+        console.error("Could not initialize Firebase. Game will run without Firebase features.", error);
+        // Set a fallback user ID if Firebase fails
+        userId = crypto.randomUUID();
     }
-});
+} else {
+    console.log("Firebase config not found. Game will run without Firebase features.");
+    // Set a fallback user ID if Firebase is not configured
+    userId = crypto.randomUUID();
+}
+// --- END of new logic ---
 
 // --- Game Logic ---
 
