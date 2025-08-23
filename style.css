@@ -1,0 +1,474 @@
+/* Custom CSS for the game canvas and overall layout */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a202c; /* Dark background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden; /* To keep rounded corners on canvases */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+#gameCanvas, #uiEffectsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#gameCanvas {
+    background-color: #2d3748;
+    z-index: 1;
+}
+
+#uiEffectsCanvas {
+    background-color: transparent;
+    pointer-events: none;
+    z-index: 5; /* Ensure it's on top for flytext */
+}
+
+.game-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #2d3748;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    width: 95%;
+    max-width: 1280px;
+}
+.health-bar-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: stretch; /* Align items to stretch vertically */
+    margin-bottom: 5px;
+    gap: 20px;
+}
+.player-ui-cluster {
+    width: 48%; /* Give each player's UI cluster a significant width */
+    display: flex;
+    flex-direction: column;
+}
+.health-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+.health-bar {
+    height: 25px;
+    background-color: #4a5568;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #a0aec0;
+    flex-grow: 1; /* Health bar takes available space */
+    position: relative; /* Needed for fill positioning and symbol placement */
+}
+.health-fill, .health-fill-layer2 {
+    height: 100%;
+    width: 100%;
+    transition: width 0.1s ease-out, background-color 0.2s linear;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 6px;
+}
+.health-fill { /* Green Layer */
+    background-color: #48bb78;
+    z-index: 2;
+}
+.health-fill-layer2 { /* Yellow/Red Layer */
+    background-color: #f6e05e; /* Banana Yellow */
+    z-index: 1;
+}
+#player1Health .health-fill, #player1Health .health-fill-layer2 { left: 0; }
+#player2Health .health-fill, #player2Health .health-fill-layer2 { right: 0; }
+
+.power-bar {
+    height: 15px;
+    border: 1px solid #667eea;
+    margin-top: 5px;
+    flex-grow: 1;
+    background-color: #4a5568;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative; /* For symbol placement */
+}
+.power-fill {
+    height: 100%;
+    background-color: #667eea;
+    width: 0%;
+    transition: width 0.1s ease-out;
+    border-radius: 4px;
+    position: absolute;
+    top: 0;
+}
+#player1Resource .power-fill { left: 0; }
+#player2Resource .power-fill { right: 0; }
+
+.teleport-charges-container {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    height: 8px;
+}
+.teleport-charge-bar {
+    flex-grow: 1;
+    height: 100%;
+    background-color: #581c87; /* Dim purple */
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+.teleport-charge-bar.full {
+    background-color: #a855f7; /* Bright neon purple */
+}
+
+#gameOverScreen, #pauseScreen, #startScreen, #titleScreen, #quitConfirmationModal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 12px;
+    z-index: 10;
+}
+
+#startScreen, #pauseScreen, #gameOverScreen, #quitConfirmationModal {
+    display: none;
+}
+
+#quitConfirmationModal {
+    z-index: 11; /* Ensure it's on top of the pause screen */
+}
+.modal-text {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+#pauseScreen {
+     justify-content: flex-start;
+     padding-top: 2rem;
+     overflow-y: auto;
+}
+.pause-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.sound-toggles {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.sound-toggle-btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.sound-toggle-btn.active {
+    background-color: white;
+    color: #1a202c;
+}
+#restartButton, .menu-button, .modal-button {
+    padding: 12px 25px;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+#restartButton:hover, .menu-button:hover, .modal-button:hover {
+    background-color: #3182ce;
+}
+#quitConfirmYes, #pauseQuitButton, #gameOverQuitButton {
+    background-color: #e53e3e; /* Red for quit/confirm */
+}
+#quitConfirmYes:hover, #pauseQuitButton:hover, #gameOverQuitButton:hover {
+    background-color: #c53030;
+}
+
+.power-ultimate-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 5px;
+}
+.power-ultimate-row.player1 {
+    justify-content: flex-start;
+}
+.power-ultimate-row.player2 {
+    justify-content: flex-end;
+}
+.ultimate-charge-display {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    color: white;
+    font-weight: bold;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    background-color: #3a3f4a;
+}
+.ultimate-charge-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#fullscreenBtn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+}
+#fullscreenBtn svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+    transition: transform 0.2s ease;
+}
+#fullscreenBtn:hover svg {
+    transform: scale(1.1);
+}
+
+/* Keyboard Diagram Styles */
+.keyboard-layout-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 1rem;
+    gap: 2rem;
+}
+.keyboard-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.key-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+.key {
+    background-color: #4a5568;
+    border: 1px solid #718096;
+    border-radius: 4px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 0 #2d3748;
+}
+.key-char {
+    font-size: 1rem;
+    font-weight: bold;
+}
+.move-label {
+    position: absolute;
+    top: -18px;
+    font-size: 0.65rem;
+    font-weight: normal;
+    white-space: nowrap;
+    color: #cbd5e0;
+}
+.wide-key { width: 104px; }
+.space-key { width: 216px; }
+.empty-space { width: 40px; height: 40px; visibility: hidden; }
+.player-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+.p2-layout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+.numpad-section {
+    display: flex;
+    gap: 4px;
+}
+.numpad-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.numpad-side {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.tall-key {
+    height: 84px;
+}
+.enter-key .key-char {
+    font-size: 0.8rem;
+}
+
+/* Title & Start Screen Specific Styles */
+.game-title {
+    font-family: 'Impact', 'Arial Black', monospace; /* Edgy, blocked font attempt */
+    font-size: 5rem; /* Big font size */
+    letter-spacing: 0.5rem; /* Blocked letters effect */
+    text-shadow: 
+        -3px -3px 0 #000,  
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        3px 3px 0 #000,
+        5px 5px 0 rgba(100, 100, 100, 0.5); /* Edgy shadow */
+    color: #ff00ff; /* Bright color */
+    margin-bottom: 2rem;
+    white-space: nowrap; /* Prevent breaking */
+}
+.press-key-prompt {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+#startScreen .sound-toggles {
+    margin-bottom: 2rem;
+}
+.speed-control-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    width: 80%;
+    max-width: 300px;
+}
+.speed-control-container label {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.speed-control-container input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 8px;
+    background: #4a5568;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+.speed-control-container input[type="range"]:hover {
+    opacity: 1;
+}
+.speed-control-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+}
+.speed-control-container input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #667eea;
+    cursor: pointer;
+}
+.speed-value {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* --- Awakening Symbol Styling --- */
+.awakening-indicator, .awakening-plus-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5; /* Above bar fills */
+    display: none; /* Hidden by default, controlled by JS */
+    line-height: 1;
+}
+
+.awakening-indicator { /* Infinity Symbol */
+    font-size: 1.2rem;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.awakening-plus-indicator { /* Plus Symbol */
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea; /* Blue to match the power bar */
+    text-shadow: 0 0 5px white; /* White glow for visibility */
+}
+
+/* Player 1 Symbol Positioning (Left) */
+#player1Resource .awakening-plus-indicator,
+#player1SingleTeleport .awakening-indicator {
+    left: 8px;
+}
+
+/* Player 2 Symbol Positioning (Right) */
+#player2Resource .awakening-plus-indicator,
+#player2SingleTeleport .awakening-indicator {
+    right: 8px;
+}
+
+.single-teleport-bar-container {
+    margin-top: 4px;
+    height: 8px;
+    background-color: #a855f7;
+    border-radius: 4px;
+    border: 1px solid #a855f7;
+    position: relative; /* For symbol placement */
+    flex-grow: 1;
+    display: none; /* Hide by default */
+}
+.single-teleport-bar-container.used {
+    background-color: transparent;
+}
