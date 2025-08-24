@@ -12,40 +12,42 @@ let app, db, auth, userId;
 
 // --- Robust Firebase Initialization ---
 // This check ensures the game can run even without the Firebase config from the Canvas environment.
-if (firebaseConfigString && firebaseConfigString !== '{}') {
-    try {
+try {
+    if (firebaseConfigString) {
         const firebaseConfig = JSON.parse(firebaseConfigString);
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
+        // Check for essential keys before initializing
+        if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.projectId) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-        // Authenticate the user and get their ID
-        const authenticateUser = async () => {
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
-            userId = auth.currentUser?.uid || crypto.randomUUID();
-            console.log("Firebase initialized. User ID:", userId);
-        };
+            // Authenticate the user and get their ID
+            const authenticateUser = async () => {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                console.log("Firebase initialized. User ID:", userId);
+            };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-            } else {
-                await authenticateUser();
-            }
-        });
-
-    } catch (error) {
-        console.error("Could not initialize Firebase. Game will run without Firebase features.", error);
-        // Set a fallback user ID if Firebase fails
-        userId = crypto.randomUUID();
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                } else {
+                    await authenticateUser();
+                }
+            });
+        } else {
+             throw new Error("Firebase config is missing essential keys.");
+        }
+    } else {
+        throw new Error("Firebase config string not found.");
     }
-} else {
-    console.log("Firebase config not found. Game will run without Firebase features.");
-    // Set a fallback user ID if Firebase is not configured
+} catch (error) {
+    console.warn(error.message, "Game will run without Firebase features.");
+    // Set a fallback user ID if Firebase is not configured or fails to initialize
     userId = crypto.randomUUID();
 }
 // --- END of new logic ---
